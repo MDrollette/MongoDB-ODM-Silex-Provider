@@ -121,7 +121,12 @@ class MongoDBODMServiceProvider implements ServiceProviderInterface
     private function loadDoctrineMongoDBConnection(Application $app)
     {
         $app['doctrine.mongodb.connection'] = $app->share(function () use ($app) {
-            return new Connection($app['doctrine.odm.mongodb.connection_options']['host'], array(), $app['doctrine.odm.mongodb.configuration']);
+            $clientOptions = array();
+            if (isset($app['doctrine.odm.mongodb.connection_options']['replicaSet'])) {
+                $clientOptions['replicaSet'] = $app['doctrine.odm.mongodb.connection_options']['replicaSet'];
+            }
+
+            return new Connection($app['doctrine.odm.mongodb.connection_options']['host'], $clientOptions, $app['doctrine.odm.mongodb.configuration']);
         });
     }
 
